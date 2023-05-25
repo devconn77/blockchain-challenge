@@ -1,0 +1,49 @@
+
+<section class="phx-hero">
+  <h1>Payment Challange</h1>
+</section>
+
+<section class="row">
+<%= form_for @conn, Routes.payment_path(@conn, :accept_payment), fn f -> %>
+  <div class="column">
+    <%= text_input f, :txn_hash %>
+  </div>
+
+  <div class="column">
+    <%= submit "GO!" %>
+  </div>
+<% end %>
+</section>
+
+<section>
+  <h2> All payments  </h2>
+
+  <table>
+  <thead>
+    <th> Transaction Hash </th>
+    <th> Payment Status </th>
+    <th> Transaction Confirmations </th>
+    <th> Action </th>
+  </thead>
+  <tbody>
+  <%= for {txn, %{status: sts, block_count: bcount}} <- @payments  do %>
+    <tr>
+      <td id="txn"> <%= txn %> </td>
+      <td> <%= sts %> </td>
+      <td> <%= bcount %> </td>
+      <td>
+        <%= form_for @conn, Routes.payment_path(@conn, :update_block_count), [method: "PUT"], fn f -> %>
+          <div class="column">
+              <%= text_input f, :txn_hash, value: txn, hidden: true  %>
+          </div>
+
+          <div class="column">
+            <%= submit "Check Block Confirmations", style: "margin: 0px; padding: 1; border-bottom-width: 0px;" %>
+          </div>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+  </table>
+</section>
